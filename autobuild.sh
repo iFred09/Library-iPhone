@@ -1,11 +1,13 @@
 #!/bin/bash
 echo -e "\033[31mDev-Jam 12/01/2015 - Script to build Libimobiledevice\033[0m"
 echo -e "\033[32m\033[1m\033[4m\033[5m\033[7mCreator Dev-Jam improved by matteyeux on 27/12/15\033[0m"
+echo -e "\033[32m\033[1m\033[4m\033[5m\033[7mEdited by iFred09 on 10/07/2017, improvements for macOS (openssl links)\033[0m"
 
 #######################################################################
 #
 #  Project......: autobuild.sh
 #  Creator......: Dev-Jam remasterized for Matteyeux le 27/12/15
+#  Edited.......: iFred09 on 10/07/2017
 #######################################################################
 
 
@@ -58,6 +60,7 @@ function brew_install(){
         brew install libplist
         brew install openssl
         brew install usbmuxd
+	brew install libtasn1
 
 
         # Install Software;
@@ -82,6 +85,12 @@ function brew_install(){
 
         # Remove outdated versions from the cellar.
         brew cleanup
+	
+	# Link OpenSSL from Brew
+        ln -s /usr/local/opt/openssl/lib/* /usr/local/lib
+        ln -s /usr/local/opt/openssl/lib/pkgconfig/* /usr/local/lib/pkgconfig
+        ln -s /usr/local/opt/openssl/include/openssl /usr/local/include
+        ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
          
 }
 
@@ -117,7 +126,6 @@ function build_libimobiledevice(){
                         cd $i
                         echo -e "\033[1;32mConfiguring $i..."
                         ./autogen.sh
-                        ./configure
                         echo -e "\033[1;32mBuilding $i..."
                         make && sudo make install
                         echo -e "\033[1;32mInstalling $i..."
@@ -127,7 +135,7 @@ function build_libimobiledevice(){
 
         buildlibs
         if [[ -e $(which ldconfig) ]]; then
-        	ldconfig
+        	sudo ldconfig
         else 
         	echo " "
         fi
